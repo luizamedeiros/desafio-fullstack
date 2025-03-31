@@ -1,0 +1,86 @@
+version: "3.8"
+
+volumes:
+  postgres_data:
+
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=softplan
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  load-balancer:
+    image: haproxy:2.6
+    ports:
+      - "9999:9999"
+    volumes:
+      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    depends_on:
+      - api
+      - api2
+    networks:
+      - app-network
+
+  api:
+    build: 
+      context: ./desafio-service
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/softplan
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SERVER_PORT=8080
+    networks:
+      - app-network
+    depends_on:
+      db:
+        condition: service_healthy 
+
+  api2:
+    build: 
+      context: ./desafio-service
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/softplan
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SERVER_PORT=8081
+    networks:
+      - app-network
+    depends_on:
+      db:
+        condition: service_healthy 
+
+  frontend:
+    build: ./desafio-web
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=http://load-balancer:9999
+    command: npm run dev -- --host 0.0.0.0
+    networks:
+      - app-network
+    depends_on:
+      - load-balancer
+
+networks:
+  app-network:
+    driver: bridge
