@@ -6,8 +6,6 @@ volumes:
 services:
   db:
     image: postgres:15-alpine
-    mem_limit: 100MB
-    cpus: 0.3
     environment:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_USER=postgres
@@ -28,8 +26,6 @@ services:
 
   load-balancer:
     image: haproxy:2.6
-    mem_limit: 30MB
-    cpus: 0.1
     ports:
       - "9999:9999"
     volumes:
@@ -44,8 +40,6 @@ services:
     build: 
       context: ./desafio-service
       dockerfile: Dockerfile
-    mem_limit: 150MB
-    cpus: 0.4
     ports:
       - "8080:8080"
     environment:
@@ -63,8 +57,6 @@ services:
     build: 
       context: ./desafio-service
       dockerfile: Dockerfile
-    mem_limit: 150MB
-    cpus: 0.4
     ports:
       - "8081:8080"
     environment:
@@ -80,14 +72,12 @@ services:
 
   frontend:
     build: ./desafio-web
-    mem_limit: 120MB
-    cpus: 0.3
     ports:
       - "3000:3000"
     environment:
       - VITE_API_URL=http://load-balancer:9999
-      - NODE_OPTIONS=--max-old-space-size=100 
-    command: npm run dev -- --host 0.0.0.0
+      - NODE_OPTIONS=--max-old-space-size=512
+    command: sh -c "npm run build && npx serve -s dist -l 3000"
     networks:
       - app-network
     depends_on:
