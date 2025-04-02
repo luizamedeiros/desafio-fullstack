@@ -17,13 +17,13 @@ docker-compose up -d --build
 ```
 
 ## Considerações sobre o desenvolvimento  
-Este desafio foi, sem dúvidas, desafiador! 😅 Dediquei todos os dias possíveis para trabalhar nele e aprender o máximo possível.  
+Este desafio foi, sem dúvidas, desafiador até o último momento! 😅 Dediquei todos os dias possíveis para trabalhar nele e aprender o máximo possível.  
 
 Tive contato com diversas tecnologias novas para mim, como **Dockerização da aplicação, balanceador de carga, limitação de recursos e Gatling**. Algumas decisões foram ajustadas ao longo do caminho, e algumas dificuldades acabaram impactando a entrega final:  
 
-- Inicialmente, utilizei **Nginx** para servir os arquivos do front-end, mas depois de um dia inteiro tentando configurá-lo corretamente, mudei para **Haproxy**. Embora tenha funcionado para a comunicação entre os serviços, não consegui fazer o load-balancer operar corretamente.  
-- No **docker-compose**, o load-balancer está presente, mas o front-end se comunica diretamente com `localhost:8080` ao invés de usar a porta do balanceador. Isso ocorreu porque, ao apontar para o load-balancer, o container ficava como `unhealthy`, e apesar de diversas tentativas, não consegui resolver esse problema a tempo.  
-- Os testes com **Gatling** também falharam, possivelmente pela mesma razão do load-balancer. Por conta disso, não os incluí na versão final do código.  
+- Inicialmente, utilizei **Nginx** para servir os arquivos do front-end, mas depois de um dia inteiro tentando configurá-lo corretamente, mudei para **Haproxy**. 
+- Os testes com **Gatling** falharam, possivelmente porque só compreendi o funcionamento pleno do load balancer na aplicação ao final do desafio. Por isso, não os incluí na versão final do código.
+- Não consegui fazer a limitação de recursos funcionar dentro dos requisitos estabelecidos. O front-end frequentemente quebrava com exit 137 por falta de memória, mesmo após várias tentativas de ajuste no código.
 
 Durante o desenvolvimento, pesquisei **extensivamente** em diversas fontes para tentar solucionar os problemas encontrados, incluindo:  
 
@@ -39,8 +39,8 @@ Mesmo tentando todas as abordagens possíveis, algumas dificuldades persistiram.
 ## Pontos de melhoria  
 Apesar dos desafios, aprendi muito e estou determinada a melhorar essa solução. Alguns pontos que planejo revisar:  
 
-- **Correção do load-balancer**, garantindo que funcione corretamente e sem impactar os serviços.  
-- **Inclusão dos testes Gatling**, para validar a performance da aplicação.  
+- **Inclusão dos testes Gatling**, para validar a performance da aplicação.
+- **Ajustes na limitação de recursos**, garantindo que o projeto rode dentro dos limites estabelecidos sem quebrar por falta de memória.
 - **Melhoria no front-end**, tornando a experiência mais próxima de um CRUD completo e facilitando os testes.  
 
 ## Melhorias na interface  
