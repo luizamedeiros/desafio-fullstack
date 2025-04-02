@@ -6,7 +6,8 @@ Esta aplicação simula uma simples página web onde transações podem ser feit
 ### Tecnologias utilizadas  
 - **Back-end**: Java 17 + Spring Boot  
 - **Front-end**: JavaScript + React  
-- **Infraestrutura**: Docker, Nginx/Haproxy, Gatling  
+- **Infraestrutura**: Docker, Nginx/Haproxy, Gatling
+- **Banco de dados**: PostgreSQL
 
 ## Como executar  
 Para rodar a aplicação localmente, basta clonar este repositório e executar:  
