@@ -35,9 +35,13 @@ public class TransacaoServiceImpl implements TransacaoService{
 
 		TransacaoValidator.validarTransacao(transacaoDto);
 
-		//todo revisar logica
-		if (transacaoDto.getTipo().equals("d") && cliente.getLimite() < cliente.getSaldo() - transacaoDto.getValor()) {
-			throw new SaldoInsuficienteException();
+		if (transacaoDto.getTipo().equals("d")) {
+			int novoSaldo = cliente.getSaldo() - transacaoDto.getValor();
+			int limiteNegativo = -cliente.getLimite();
+
+			if (novoSaldo < limiteNegativo) {
+				throw new SaldoInsuficienteException();
+			}
 		}
 
 		Transacao transacao = new Transacao();
@@ -48,10 +52,10 @@ public class TransacaoServiceImpl implements TransacaoService{
 		transacao.setRealizadaEm(LocalDateTime.now());
 		transacaoRepository.save(transacao);
 
-		if (transacaoDto.getTipo().equals("r")) {
-			cliente.setSaldo(cliente.getSaldo() + transacaoDto.getValor());
-		} else {
+		if (transacaoDto.getTipo().equals("d")) {
 			cliente.setSaldo(cliente.getSaldo() - transacaoDto.getValor());
+		} else {
+			cliente.setSaldo(cliente.getSaldo() + transacaoDto.getValor());
 		}
 
 		clienteRepository.save(cliente);
